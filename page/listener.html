@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
+    <title>Broadcaster</title>
+</head>
+<body>
+
+
+<div class="container">
+    <div class="row">
+
+        <div class="col-md-6">
+            <h1>Subscriber</h1>
+            <button style="margin-left: 10px" type="button" id="start-listening" class="btn btn-success">Listen Live
+                Stream
+            </button>
+        </div>
+        <div style="margin-top: 40px" class="col-md-8">
+
+            <h2>Notifications</h2>
+            <div>
+                <p id="debug"></p>
+                <p id="current-notification"></p>
+            </div>
+        </div>
+
+    </div>
+
+
+</div>
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+        integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+        crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+        integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+        crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+        integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+        crossorigin="anonymous"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js"></script>
+<script type="text/javascript" src="https://unpkg.com/sfmediastream@latest/dist/SFMediaStream.min.js"></script>
+
+
+<script type="text/javascript">
+
+    var app = {
+
+        socketConnection: null,
+        presenterId: "BROADCASTER_ID",
+        audioStreamer: null,
+        config: {
+            socketConfig: {transports: ['websocket']}
+        },
+        init: function () {
+            app.socketConnection = io('/', app.config.socketConfig);
+            $('#start-listening').click(function () {
+                if (null === app.audioStreamer) {
+                    app.setupStreamer();
+                    app.socketConnection.emit('requestBufferHeader', {id: app.presenterId});
+                }
+                else {
+
+                    app.audioStreamer.playStream();
+                }
+            });
+
+        },
+
+        setupStreamer: function () {
+
+            if (null !== app.audioStreamer) {
+                return;
+            }
+
+            // Set latency to 100ms (Equal with presenter)
+            app.audioStreamer = new ScarletsAudioStreamer(100);
+            app.audioStreamer.playStream();
+
+            // Buffer header must be received first
+            app.socketConnection.on(app.presenterId + "-init", function (packet) {
+                console.log("Setup completed");
+                app.audioStreamer.setBufferHeader(packet);
+            });
+
+            // Receive buffer and play it
+            app.socketConnection.on(app.presenterId, function (packet) {
+                let description = "Buffer received: " + packet[0].byteLength + " bytes";
+                $('#debug').text(description);
+                $('#current-notification').text('<span class="alert alert-green">Listening</span>"');
+
+                if (packet[0].byteLength === 0) {
+                    console.log('Received zero length packed');
+                    return;
+                }
+
+                console.log("here to start player");
+                // audioStreamer.receiveBuffer(packet);
+                app.audioStreamer.realtimeBufferPlay(packet);
+            });
+        }
+
+    };
+
+    app.init();
+
+</script>
+</body>
+</html>

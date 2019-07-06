@@ -1,0 +1,10 @@
+{
+  "name": "streaming-test",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.17.1",
+    "pug": "^2.0.4",
+    "serberries": "*",
+    "socket.io": "*"
+  }
+}
