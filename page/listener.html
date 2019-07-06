@@ -81,7 +81,7 @@
             }
 
             // Set latency to 100ms (Equal with presenter)
-            app.audioStreamer = new ScarletsAudioStreamer(100);
+            app.audioStreamer = new ScarletsAudioStreamer(1000);
             app.audioStreamer.playStream();
 
             // Buffer header must be received first
@@ -94,7 +94,7 @@
             app.socketConnection.on(app.presenterId, function (packet) {
                 let description = "Buffer received: " + packet[0].byteLength + " bytes";
                 $('#debug').text(description);
-                $('#current-notification').html('<span class="alert alert-green">Listening</span>"');
+                $('#current-notification').html('<span class="alert alert-green">Listening...</span>');
 
                 if (packet[0].byteLength === 0) {
                     console.log('Received zero length packed');
@@ -102,8 +102,8 @@
                 }
 
                 console.log("here to start player");
-                // audioStreamer.receiveBuffer(packet);
-                app.audioStreamer.realtimeBufferPlay(packet);
+                 audioStreamer.receiveBuffer(packet);
+                //app.audioStreamer.realtimeBufferPlay(packet);
             });
         }
 
