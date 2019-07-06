@@ -6,5 +6,8 @@
     "pug": "^2.0.4",
     "serberries": "*",
     "socket.io": "*"
+  },
+  "scripts": {
+    "start": "node server.js"
   }
 }
