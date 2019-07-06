@@ -94,7 +94,7 @@
             app.socketConnection.on(app.presenterId, function (packet) {
                 let description = "Buffer received: " + packet[0].byteLength + " bytes";
                 $('#debug').text(description);
-                $('#current-notification').text('<span class="alert alert-green">Listening</span>"');
+                $('#current-notification').html('<span class="alert alert-green">Listening</span>"');
 
                 if (packet[0].byteLength === 0) {
                     console.log('Received zero length packed');
