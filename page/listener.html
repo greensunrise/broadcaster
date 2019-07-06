@@ -81,7 +81,7 @@
             }
 
             // Set latency to 100ms (Equal with presenter)
-            app.audioStreamer = new ScarletsAudioStreamer(100);
+            app.audioStreamer = new ScarletsAudioStreamer(200);
             app.audioStreamer.playStream();
 
             // Buffer header must be received first
@@ -102,8 +102,8 @@
                 }
 
                 console.log("here to start player");
-                //app.audioStreamer.receiveBuffer(packet);
-                app.audioStreamer.realtimeBufferPlay(packet);
+                app.audioStreamer.receiveBuffer(packet);
+                //app.audioStreamer.realtimeBufferPlay(packet);
             });
         }
 
