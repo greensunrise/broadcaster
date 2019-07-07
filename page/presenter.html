@@ -69,7 +69,7 @@
                     channelCount: 1,
                     echoCancellation: false
                 }
-            }, 1200);
+            }, 200);
             app.presenterMedia.onRecordingReady = function (packet) {
                 console.log("Recording started!");
                 console.log("Header size: " + packet.data.size);
