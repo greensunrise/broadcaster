@@ -24,6 +24,11 @@ app.get('/listen/:broadcasterId', function (req, res) {
 });
 
 
+app.get('/js/:js_file',function(req,res){
+    res.sendFile(__dirname + '/page/js/'+req.params.js_file);
+});
+
+
 io.on('connection', function (socket) {
 
     /* Presenter */

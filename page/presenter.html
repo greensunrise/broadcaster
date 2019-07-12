@@ -37,21 +37,33 @@
 
 
 </div>
-<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
-        integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
-        crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
-        integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
-        crossorigin="anonymous"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
-        integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
-        crossorigin="anonymous"></script>
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js"></script>
-<script type="text/javascript" src="https://unpkg.com/sfmediastream@latest/dist/SFMediaStream.min.js"></script>
+<script src="./js/jquery-3.2.1.slim.min.js"></script>
+<script src="./js/popper.min.js"></script>
+<script src="./js/bootstrap.min.js"></script>
+<script type="text/javascript" src="./js/socket.io.js"></script>
+<script type="text/javascript" src="./js/SFMediaStream.min.js"></script>
+<!-- load OpusMediaRecorder.umd.js. OpusMediaRecorder will be loaded. -->
+<script src="./js/OpusMediaRecorder.umd.js"></script>
+<!-- load encoderWorker.umd.js. This should be after OpusMediaRecorder. -->
+<!-- This script tag will create OpusMediaRecorder.encoderWorker. -->
+<script src="./js/encoderWorker.umd.js"></script>
 
 <script type="text/javascript">
 
+    const workerOptions = {
+        OggOpusEncoderWasmPath: './js/OggOpusEncoder.wasm',
+        WebMOpusEncoderWasmPath: './js/WebMOpusEncoder.wasm'
+    };
+    window.MediaRecorder = OpusMediaRecorder;
+    if (!window.MediaRecorder) {
+        console.log('here');
 
+    }
+// Check if a target format (e.g. audio/ogg) is supported.
+    else if (!window.MediaRecorder.isTypeSupported('audio/ogg;codecs=opus')) {
+        console.log('here');
+        window.MediaRecorder = OpusMediaRecorder;
+    }
     var app = {
 
         socketConnection: null,
@@ -66,7 +78,7 @@
 
             app.presenterMedia = new ScarletsMediaPresenter({
                 audio: {
-                    channelCount: 1,
+                    channelCount: 5,
                     echoCancellation: false
                 }
             }, 200);
