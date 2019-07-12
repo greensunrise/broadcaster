@@ -50,16 +50,15 @@
 
 <script type="text/javascript">
 
-    window.MediaRecorder = OpusMediaRecorder;
+    // Check if MediaRecorder available.
     if (!window.MediaRecorder) {
-        console.log('here');
-
+        window.MediaRecorder = OpusMediaRecorder;
     }
 // Check if a target format (e.g. audio/ogg) is supported.
     else if (!window.MediaRecorder.isTypeSupported('audio/ogg;codecs=opus')) {
-        console.log('here');
         window.MediaRecorder = OpusMediaRecorder;
     }
+
     var app = {
 
         socketConnection: null,
