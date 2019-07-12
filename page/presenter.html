@@ -50,10 +50,6 @@
 
 <script type="text/javascript">
 
-    const workerOptions = {
-        OggOpusEncoderWasmPath: './js/OggOpusEncoder.wasm',
-        WebMOpusEncoderWasmPath: './js/WebMOpusEncoder.wasm'
-    };
     window.MediaRecorder = OpusMediaRecorder;
     if (!window.MediaRecorder) {
         console.log('here');
