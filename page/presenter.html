@@ -41,7 +41,7 @@
 <script src="./js/popper.min.js"></script>
 <script src="./js/bootstrap.min.js"></script>
 <script type="text/javascript" src="./js/socket.io.js"></script>
-<script type="text/javascript" src="./js/SFMediaStream.min.js"></script>
+<script type="text/javascript" src="./js/SFMediaStream.js"></script>
 <!-- load OpusMediaRecorder.umd.js. OpusMediaRecorder will be loaded. -->
 <script src="./js/OpusMediaRecorder.umd.js"></script>
 <!-- load encoderWorker.umd.js. This should be after OpusMediaRecorder. -->
@@ -49,15 +49,6 @@
 <script src="./js/encoderWorker.umd.js"></script>
 
 <script type="text/javascript">
-
-    // Check if MediaRecorder available.
-    if (!window.MediaRecorder) {
-        window.MediaRecorder = OpusMediaRecorder;
-    }
-// Check if a target format (e.g. audio/ogg) is supported.
-    else if (!window.MediaRecorder.isTypeSupported('audio/ogg;codecs=opus')) {
-        window.MediaRecorder = OpusMediaRecorder;
-    }
 
     var app = {
 
