@@ -715,6 +715,8 @@ var ScarletsMediaPresenter = function(options, latency){
 		scope.bufferHeader = null;
 		var bufferHeaderLength = false;
 
+		//options['mimeType']='audio/ogg';
+
 		scope.mediaRecorder = new MediaRecorder(mediaStream, options);
 
 		if(scope.debug) console.log("MediaRecorder obtained");
@@ -725,7 +727,7 @@ var ScarletsMediaPresenter = function(options, latency){
 		scope.mediaRecorder.ondataavailable = function(e){
 			// Stream segments after the header was obtained
 
-			console.log(e);
+
 			if(bufferHeaderLength !== false){
 				var streamingTime = Number(String(Date.now()).slice(-5, -3));
 				scope.onBufferProcess([e.data, streamingTime]);
@@ -759,6 +761,8 @@ var ScarletsMediaPresenter = function(options, latency){
 
 	scope.startRecording = function(){
 		if(scope.mediaGranted === false || scope.mediaRecorder === null){
+
+
 			scope.recordingReady = false;
 			navigator.mediaDevices.getUserMedia(options)
 				.then(mediaGranted).catch(console.error);

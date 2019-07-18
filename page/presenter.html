@@ -50,79 +50,107 @@
 
 <script type="text/javascript">
 
-    var app = {
+    $(document).ready(function () {
+        //b  window.MediaRecorder = OpusMediaRecorder;
 
-        socketConnection: null,
-        presenterMedia: null,
-        presenterId: null,
-        config: {
-            socketConfig: {transports: ['websocket']}
-        },
-        init: function () {
+        var app = {
 
-            app.socketConnection = io('/', app.config.socketConfig);
+            socketConnection: null,
+            presenterMedia: null,
+            keepRecording: false,
+            presenterId: null,
+            config: {
+                socketConfig: {transports: ['websocket']}
+            },
 
-            app.presenterMedia = new ScarletsMediaPresenter({
-                audio: {
-                    channelCount: 5,
-                    echoCancellation: false
+            startBroadCast: function () {
+                app.keepRecording= true;
+                var constraints = { audio: true };
+                navigator.mediaDevices.getUserMedia(constraints).then(function (mediaStream) {
+                    var mediaRecorder = new MediaRecorder(mediaStream);
+
+                    app.presenterMedia = mediaRecorder;
+                    mediaRecorder.onstart = function (e) {
+                        this.chunks = [];
+                    };
+                    mediaRecorder.ondataavailable = function (e) {
+                        this.chunks.push(e.data);
+                    };
+                    mediaRecorder.onstop = function (e) {
+
+                        var blob = new Blob(this.chunks, {'type': 'audio/ogg; codecs=opus'});
+
+                        console.log(blob);
+                        app.socketConnection.emit('stream', {audioData:blob,id:app.presenterId});
+                    };
+
+                    // Start recording
+                    mediaRecorder.start();
+
+                    // Stop recording after 5 seconds and broadcast it to server
+                    let handle = setInterval(function () {
+
+                        if (false === app.keepRecording) {
+
+                            clearInterval(handle);
+                            return;
+                        }
+
+
+                        mediaRecorder.stop();
+                        mediaRecorder.start();
+
+                    }, 5000);
+                });
+            },
+            init: function () {
+
+                app.socketConnection = io('/', {transports: ['websocket']});
+
+                $('#start-broadcast').click(function () {
+
+                    if (null === app.presenterId) {
+                        app.presenterId = app.createId(5);
+                    }
+
+                    console.log('Start broadcast for ' + app.presenterId);
+                    let listenLink = window.location.origin + '/listen/' + app.presenterId;
+                    $('#listen-url').html('Subscribe URL: <span><a href="' + listenLink + '" target="_blank">' + listenLink + ' </a></span>');
+                    $('#current-notification').html('<span class="alert alert-success">Broadcast started. Broadcaster unique id ' + app.presenterId + '</span>');
+
+                    app.startBroadCast();
+                });
+
+                $('#stop-broadcast').click(function () {
+                    console.log('Stop broadcast');
+                    app.keepRecording =false;
+                    $('#debug').text('');
+                    $('#current-notification').html('<span class="alert alert-danger">Broadcast stopped. Broadcaster unique id' + app.presenterId + '</span>');
+                    app.presenterMedia.stop();
+                });
+
+
+            },
+            onStartPresentation: function () {
+
+                let listenUrl = window.location.origin + '/listen/';
+
+            },
+
+            createId: function (length) {
+                var result = '';
+                var characters = 'abcdefghijklmnopqrstuvwxyz';
+                var charactersLength = characters.length;
+                for (var i = 0; i < length; i++) {
+                    result += characters.charAt(Math.floor(Math.random() * charactersLength));
                 }
-            }, 200);
-            app.presenterMedia.onRecordingReady = function (packet) {
-                console.log("Recording started!");
-                console.log("Header size: " + packet.data.size);
-
-                console.log(app.presenterId);
-
-                app.socketConnection.emit('bufferHeader', {audioData: packet, id: app.presenterId});
-            };
-            app.presenterMedia.onBufferProcess = function (streamData) {
-                $('#debug').text('Buffer sent: ' + streamData[0].size + ' bytes.');
-                app.socketConnection.emit('stream', {audioData: streamData, id: app.presenterId});
-            };
-
-            $('#start-broadcast').click(function () {
-
-                if (null === app.presenterId) {
-                    app.presenterId = app.createId(5);
-                }
-
-                console.log('Start broadcast for '+app.presenterId);
-                let listenLink= window.location.origin + '/listen/' + app.presenterId;
-                $('#listen-url').html('Subscribe URL: <span><a href="'+listenLink+'" target="_blank">'+listenLink+' </a></span>');
-                $('#current-notification').html('<span class="alert alert-success">Broadcast started. Broadcaster unique id ' + app.presenterId + '</span>');
-                app.presenterMedia.startRecording();
-
-            });
-
-            $('#stop-broadcast').click(function () {
-                console.log('Stop broadcast');
-                $('#debug').text('');
-                $('#current-notification').html('<span class="alert alert-danger">Broadcast stopped. Broadcaster unique id' + app.presenterId + '</span>');
-                app.presenterMedia.stopRecording();
-            });
-
-
-        },
-        onStartPresentation: function () {
-
-            let listenUrl = window.location.origin + '/listen/';
-
-        },
-
-        createId: function (length) {
-            var result = '';
-            var characters = 'abcdefghijklmnopqrstuvwxyz';
-            var charactersLength = characters.length;
-            for (var i = 0; i < length; i++) {
-                result += characters.charAt(Math.floor(Math.random() * charactersLength));
+                return result;
             }
-            return result;
-        }
 
-    };
+        };
 
-    app.init();
+        app.init();
+    });
 
 
 </script>

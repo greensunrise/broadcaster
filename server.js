@@ -31,20 +31,15 @@ app.get('/js/:js_file',function(req,res){
 
 io.on('connection', function (socket) {
 
-    /* Presenter */
-    socket.on('bufferHeader', function (packet) {
-        presenterCollection[packet.id] = packet.audioData;
-
-        socket.broadcast.emit(packet.id, packet.audioData);
-    });
 
     // Broadcast the received buffer
     socket.on('stream', function (packet) {
+        console.log('new audio for '+packet.id);
         socket.broadcast.emit(packet.id, packet.audioData);
     });
 
     // Send buffer header to new user
-    socket.on('requestBufferHeader', function (data) {
+    socket.on('register', function (data) {
 
         console.log("New client to join",data.id);
         console.log("Setup ",data.id+'-init');

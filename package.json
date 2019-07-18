@@ -6,7 +6,8 @@
     "human-readable-ids": "^1.0.4",
     "pug": "^2.0.4",
     "serberries": "*",
-    "socket.io": "*"
+    "socket.io": "*",
+    "socket.io-stream": "^0.9.1"
   },
   "scripts": {
     "start": "node server.js"
