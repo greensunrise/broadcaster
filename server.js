@@ -20,7 +20,6 @@ app.get('/listen/:broadcasterId', function (req, res) {
         let withBroadcaster = data.replace('BROADCASTER_ID',req.params.broadcasterId);
         res.send(withBroadcaster);
     });
-   // res.sendFile(__dirname + '/page/listener.html?broadcaster_id='+req.param('broadcasterId'));
 });
 
 
@@ -49,4 +48,10 @@ io.on('connection', function (socket) {
 
 });
 
-server.listen(process.env.PORT || 5000);
+const listener =server.listen(process.env.PORT || 5000,()=>{
+
+    let portNumber = listener.address().port;
+    console.log('Listening server at '+portNumber);
+    console.log('Broadcast at ','http://localhost:'+portNumber+'/broadcast');
+
+});
