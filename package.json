@@ -4,7 +4,7 @@
   "dependencies": {
     "express": "^4.17.1",
     "human-readable-ids": "^1.0.4",
-    "pug": "^2.0.4",
+    "pug": "^3.0.1",
     "serberries": "*",
     "socket.io": "*",
     "socket.io-stream": "^0.9.1"
